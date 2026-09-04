@@ -73,7 +73,7 @@ Comportamientos útiles:
 | [`src/App.jsx`](src/App.jsx) | UI principal: dropzone, recibo de carga, KPIs que siguen al filtro, pestañas Conceptos/Facturas, descarga con confirmación, Limpiar con confirmación, aviso de privacidad como capa (la tabla conserva filtros) |
 | [`src/Privacy.jsx`](src/Privacy.jsx) | Página completa con el aviso de privacidad (LFPDPPP) |
 | [`src/WelcomeDialog.jsx`](src/WelcomeDialog.jsx) | Modal de bienvenida (primera visita, persistido en localStorage) |
-| [`src/App.css`](src/App.css) | Estilos inspirados en SAP Fiori (paleta, tipografía 72, layout shell) |
+| [`src/App.css`](src/App.css) | Sistema visual inspirado en Attio: tokens en `:root` (superficies, bordes, texto, acento, estados), Inter empaquetada localmente, botón primario negro |
 
 ### Decisiones clave (y por qué)
 
@@ -123,8 +123,8 @@ Comportamientos útiles:
 - [React](https://react.dev/) — UI
 - [AG Grid Enterprise](https://www.ag-grid.com/) — tabla con filtros, edición, rangos, agrupación y exportación a Excel
   - `ag-grid-enterprise` + `ag-grid-react` + `@ag-grid-community/locale` (español)
-  - Tema Quartz con la paleta Fiori
-- Estilo inspirado en [SAP Fiori](https://experience.sap.com/fiori-design-web/) (paleta azul `#0070f2`, tipografía 72, shell header)
+  - Tema Quartz con los mismos tokens que la app
+- Estilo inspirado en [Attio](https://attio.com): fondo `#fafafa`, superficies blancas con borde `#e6e7ea`, texto `#1b1b1d`, acento `#2f6fed` solo para foco y selección, [Inter](https://rsms.me/inter/) vía `@fontsource-variable/inter` (sin llamadas a Google Fonts)
 
 ## Desarrollo
 

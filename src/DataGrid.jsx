@@ -11,30 +11,36 @@ const modules = [AllEnterpriseModule]
 if (import.meta.env.DEV) modules.push(ValidationModule)
 ModuleRegistry.registerModules(modules)
 
-// Tema Quartz con la paleta Fiori de App.css. Tamaños un punto más grandes que el default
-// (varias personas con lentes se quejaron de la letra y del ícono de filtro).
+// Tema Quartz con los tokens de App.css (estilo Attio): bordes finos, grises neutros, Inter 13px
 const theme = themeQuartz.withParams({
-  accentColor: '#0070f2',
+  accentColor: '#2f6fed',
   backgroundColor: '#ffffff',
-  foregroundColor: '#32363a',
-  borderColor: '#d9d9d9',
-  headerBackgroundColor: '#f5f6f7',
-  headerTextColor: '#4a4d50',
-  headerFontWeight: 700,
+  foregroundColor: '#1b1b1d',
+  borderColor: '#e6e7ea',
+  rowBorder: true,
+  columnBorder: false,
+  headerBackgroundColor: '#fafafa',
+  headerTextColor: '#6b6f76',
+  headerFontWeight: 500,
+  headerColumnBorder: false,
   oddRowBackgroundColor: '#ffffff',
-  rowHoverColor: '#eaf4ff',
-  selectedRowBackgroundColor: '#d9ecff',
-  rangeSelectionBorderColor: '#0070f2',
-  rangeSelectionBackgroundColor: 'rgba(0,112,242,.10)',
-  fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
-  fontSize: 14,
-  headerFontSize: 13,
-  iconSize: 18,
-  rowHeight: 32,
+  rowHoverColor: '#f7f7f8',
+  selectedRowBackgroundColor: '#eaf1ff',
+  rangeSelectionBorderColor: '#2f6fed',
+  rangeSelectionBackgroundColor: 'rgba(47,111,237,.08)',
+  chromeBackgroundColor: '#fafafa',
+  fontFamily: "'Inter Variable', Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+  fontSize: 13,
+  headerFontSize: 12.5,
+  iconSize: 16,
+  rowHeight: 36,
   headerHeight: 36,
-  borderRadius: 0,
+  cellHorizontalPadding: 12,
+  borderRadius: 6,
   wrapperBorderRadius: 0,
   wrapperBorder: false,
+  menuBorder: true,
+  menuShadow: '0 12px 32px rgba(16,24,40,.14), 0 2px 6px rgba(16,24,40,.06)',
 })
 
 // Estilos para el Excel exportado (se aplican por cellClass; ver columns.js)
@@ -122,7 +128,7 @@ const DataGrid = forwardRef(function DataGrid(
   const rowId = useCallback(p => (p.data.__id ? p.data.__id : getRowId(p.data)), [getRowId])
 
   const getRowStyle = useCallback(p =>
-    p.node.rowPinned ? { fontWeight: 700, background: '#f5f6f7', borderTop: '2px solid #d9d9d9' } : undefined
+    p.node.rowPinned ? { fontWeight: 600, background: '#fafafa', borderTop: '1px solid #d3d5da' } : undefined
   , [])
 
   // Menú contextual: solo copiar y ajustar columnas (la exportación va por el botón de la app)

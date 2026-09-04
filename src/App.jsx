@@ -156,11 +156,13 @@ export default function App() {
         </div>
       )}
 
-      <div className="shell-header">
-        <span className="shell-logo" onClick={() => setPrivacyOpen(false)} style={{ cursor: 'pointer' }}>
-          XML · CFDI Parser
-        </span>
-      </div>
+      <header className="shell-header">
+        <span className="shell-logo">CFDI a Excel</span>
+        <div className="shell-right">
+          <span className="pill pill--ok" title="Los XML se procesan en tu navegador; no hay servidor">100% en tu navegador</span>
+          <button className="shell-link" type="button" onClick={() => setPrivacyOpen(true)}>Aviso de privacidad</button>
+        </div>
+      </header>
 
       <div className="app">
         <div className="page-header">
