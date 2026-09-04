@@ -157,7 +157,7 @@ export default function App() {
       )}
 
       <header className="shell-header">
-        <a className="shell-logo" href="/" aria-label="CFDI a Excel, inicio">CFDI a Excel</a>
+        <a className="shell-logo" href="/" aria-label="CFDI a Excel, inicio"><img src="/logo-mark.svg" alt="" width="22" height="22" />CFDI a Excel</a>
         <div className="shell-right">
           <span className="pill pill--ok" title="Los XML se procesan en tu navegador; no hay servidor">100% en tu navegador</span>
           <button className="shell-link" type="button" onClick={() => setPrivacyOpen(true)}>Aviso de privacidad</button>
@@ -165,14 +165,32 @@ export default function App() {
       </header>
 
       <div className="app">
-        <div className="page-header">
-          <h1>Convertir CFDI a Excel</h1>
-          <p>
-            Arrastra tus facturas XML del SAT (CFDI 3.3 y 4.0) y obtén un Excel con conceptos, subtotal, IVA,
-            retenciones y totales por factura. <strong>Todo se procesa en tu navegador:</strong> los XML nunca se
-            suben a ningún servidor. Puedes desconectar tu internet y sigue funcionando. Gratis, sin registro.
-          </p>
-        </div>
+        {hasData ? (
+          <div className="page-header">
+            <h1>Convertir CFDI a Excel</h1>
+            <p>Todo se procesa en tu navegador. Los XML nunca se suben a ningún servidor.</p>
+          </div>
+        ) : (
+          <section className="hero">
+            <button type="button" className="hero-kicker" onClick={() => document.getElementById('como-se-usa')?.scrollIntoView({ behavior: 'smooth' })}>
+              CFDI 3.3 y 4.0 · Excel con IVA, retenciones y totales
+              <svg viewBox="0 0 12 12" fill="none"><path d="M4.5 3l3 3-3 3" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" /></svg>
+            </button>
+            <h1>Convertir CFDI a Excel.</h1>
+            <p>
+              Arrastra tus facturas XML del SAT y obtén un Excel con conceptos, subtotal, IVA, retenciones y
+              total por factura. Todo ocurre en tu navegador: nada se sube a ningún servidor.
+            </p>
+            <div className="hero-actions">
+              <button type="button" className="btn-ghost btn-lg" onClick={() => document.getElementById('como-se-usa')?.scrollIntoView({ behavior: 'smooth' })}>
+                ¿Cómo funciona?
+              </button>
+              <button type="button" className="btn-export btn-lg" onClick={() => fileInputRef.current?.click()}>
+                Cargar archivos XML
+              </button>
+            </div>
+          </section>
+        )}
 
         {/* Zona de carga: grande sin datos, compacta con datos */}
         <div className={`upload-card${hasData ? ' upload-card--compact' : ''}`}>
@@ -207,7 +225,7 @@ export default function App() {
           )}
         </div>
 
-        {!hasData && !loading && <HowToCard />}
+        {!hasData && !loading && <div id="como-se-usa"><HowToCard /></div>}
 
         {hasData && (
           <>

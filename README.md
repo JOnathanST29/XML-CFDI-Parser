@@ -117,6 +117,19 @@ Comportamientos útiles:
 > Una fila **por concepto** en la vista Conceptos: si una factura tiene 5 productos, son 5 filas con la misma cabecera.
 > Para una fila por comprobante usa la pestaña Facturas. El Excel siempre trae las dos hojas.
 
+## Identidad
+
+Marca "CFDI a Excel". Archivos en `public/`:
+
+| Archivo | Uso |
+|---|---|
+| `logo-mark.svg` | Marca sola (cuadro negro con tabla y celda verde). Es también `favicon.svg` y el ícono del header |
+| `logo.svg` / `logo-white.svg` | Lockup con wordmark para fondo claro / oscuro |
+| `apple-touch-icon.png` | 180×180 para iOS |
+| `og-image.png` | 1200×630 para previews en redes y WhatsApp |
+
+Los PNG se generaron en el navegador con canvas a partir del SVG (no hay conversor en el repo); si cambias la marca, vuelve a generarlos.
+
 ## Stack
 
 - [Vite](https://vite.dev/) — build tool / dev server
