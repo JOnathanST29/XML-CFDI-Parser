@@ -11,6 +11,10 @@ import './App.css'
 const WELCOME_KEY = 'cfdi-parser:welcome-seen'
 const EMPTY = { conceptos: [], facturas: [], taxColumns: [] }
 const isMobile = () => typeof navigator !== 'undefined' && /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)
+const isNarrow = () => typeof window !== 'undefined' && window.matchMedia('(max-width: 640px)').matches
+// En pantalla angosta solo estas columnas; el resto sigue en el Excel
+const COMPACT_CONCEPTOS = ['EMISOR', 'PRODUCTO', 'CANTIDAD', 'IMPORTE_CON_IMPUESTOS', 'FECHA']
+const COMPACT_FACTURAS  = ['EMISOR', 'FECHA', 'TOTAL_MXN', 'TIPO']
 
 /** KPIs sobre las facturas visibles. Ingresos suman, egresos (notas de crédito) restan, nómina/pago/traslado se excluyen. */
 function computeStats(visible, mode) {
@@ -261,6 +265,8 @@ export default function App() {
                   quickFilterText={quick}
                   onVisibleRows={setVisibleC}
                   onChange={onConceptosChange}
+                  compact={isNarrow()}
+                  compactColumns={COMPACT_CONCEPTOS}
                 />
               </div>
               <div className="grid-body" hidden={tab !== 'facturas'}>
@@ -273,6 +279,8 @@ export default function App() {
                   quickFilterText={quick}
                   onVisibleRows={setVisibleF}
                   onChange={onFacturasChange}
+                  compact={isNarrow()}
+                  compactColumns={COMPACT_FACTURAS}
                 />
               </div>
             </div>

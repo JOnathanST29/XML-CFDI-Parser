@@ -70,10 +70,19 @@ const SIDE_BAR = {
  *  - quickFilterText
  */
 const DataGrid = forwardRef(function DataGrid(
-  { columnDefs, rowData, getRowId, labelField, onVisibleRows, onChange, quickFilterText = '', domLayout },
+  { columnDefs, rowData, getRowId, labelField, onVisibleRows, onChange, quickFilterText = '', domLayout, compact = false, compactColumns = [] },
   ref,
 ) {
   const gridRef = useRef(null)
+
+  // Celular: solo las columnas esenciales (el Excel sigue llevando todas), sin panel lateral ni barra de grupos
+  const onGridReady = useCallback((e) => {
+    if (!compact || !compactColumns.length) return
+    const keep = new Set(compactColumns)
+    e.api.applyColumnState({
+      state: flatColumns(columnDefs).map(c => ({ colId: c.field, hide: !keep.has(c.field) })),
+    })
+  }, [compact, compactColumns, columnDefs])
   useImperativeHandle(ref, () => ({ get api() { return gridRef.current?.api ?? null } }), [])
 
   const sumFields = useMemo(
@@ -138,14 +147,15 @@ const DataGrid = forwardRef(function DataGrid(
       undoRedoCellEditingLimit={50}
       stopEditingWhenCellsLoseFocus
       enterNavigatesVerticallyAfterEdit
-      sideBar={SIDE_BAR}
-      rowGroupPanelShow="always"
+      sideBar={compact ? false : SIDE_BAR}
+      rowGroupPanelShow={compact ? 'never' : 'always'}
       groupDefaultExpanded={1}
       suppressAggFuncInHeader
       excelStyles={EXCEL_STYLES}
       getRowStyle={getRowStyle}
       getContextMenuItems={getContextMenuItems}
       tooltipShowDelay={400}
+      onGridReady={onGridReady}
       onModelUpdated={onModelUpdated}
       onCellValueChanged={onCellValueChanged}
     />
