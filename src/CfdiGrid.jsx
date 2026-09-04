@@ -1,46 +1,14 @@
 import { useMemo, useCallback, useRef, useState } from 'react'
 import { AgGridReact } from 'ag-grid-react'
-import {
-  ModuleRegistry,
-  ClientSideRowModelModule,
-  ClientSideRowModelApiModule,
-  RowApiModule,
-  ColumnApiModule,
-  LocaleModule,
-  RowStyleModule,
-  CustomFilterModule,
-  TextEditorModule,
-  NumberEditorModule,
-  ColumnAutoSizeModule,
-  PinnedRowModule,
-  QuickFilterModule,
-  CellStyleModule,
-  UndoRedoEditModule,
-  ValidationModule,
-  themeQuartz,
-} from 'ag-grid-community'
+import { ModuleRegistry, ValidationModule, themeQuartz } from 'ag-grid-community'
+import { AllEnterpriseModule } from 'ag-grid-enterprise'
 import { AG_GRID_LOCALE_ES } from '@ag-grid-community/locale'
 import SetFilter from './SetFilter'
 
-// Registro modular: solo lo que usamos. Evita cargar AllCommunityModule (~300 KB gzip).
+// AG Grid Enterprise (licencia en src/agGridLicense.js). AllEnterpriseModule incluye todo Community.
 // En dev sumamos ValidationModule para ver errores completos en consola (no va al bundle de prod).
-const modules = [
-  ClientSideRowModelModule,
-  ClientSideRowModelApiModule,
-  RowApiModule,
-  ColumnApiModule,
-  LocaleModule,
-  RowStyleModule,
-  CustomFilterModule,
-  TextEditorModule,
-  NumberEditorModule,
-  ColumnAutoSizeModule,
-  PinnedRowModule,
-  QuickFilterModule,
-  CellStyleModule,
-  UndoRedoEditModule,
-]
-if (import.meta.env.DEV) modules.push(ValidationModule) // tree-shaken en prod
+const modules = [AllEnterpriseModule]
+if (import.meta.env.DEV) modules.push(ValidationModule)
 ModuleRegistry.registerModules(modules)
 
 // Tema Quartz con la paleta Fiori de App.css
