@@ -728,3 +728,113 @@ strong { font-weight: 600; }
   .how-to-bottom { display: none; }
   .shell-right .pill { display: none; }
 }
+
+/* ══════════ Motion ══════════
+   Entradas suaves y escalonadas, micro-interacciones en botones, sin nada que distraiga.
+   Todo se desactiva con prefers-reduced-motion. */
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop-in {
+  from { opacity: 0; transform: translateY(8px) scale(.98); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes slide-down {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: none; }
+}
+@keyframes pulse-ring {
+  0%   { box-shadow: 0 0 0 0 rgba(47,111,237,.25); }
+  100% { box-shadow: 0 0 0 10px rgba(47,111,237,0); }
+}
+@keyframes shimmer {
+  from { background-position: -200% 0; }
+  to   { background-position: 200% 0; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* Hero: kicker, título, subtítulo y botones entran escalonados */
+.hero > * { animation: fade-up .6s cubic-bezier(.2,.7,.2,1) backwards; }
+.hero > :nth-child(1) { animation-delay: .05s; }
+.hero > :nth-child(2) { animation-delay: .12s; }
+.hero > :nth-child(3) { animation-delay: .2s; }
+.hero > :nth-child(4) { animation-delay: .28s; }
+
+/* Tarjetas de la página */
+.page-header, .upload-card, .how-to-card, .toolbar, .sheet-wrap, .export-bar {
+  animation: fade-up .5s cubic-bezier(.2,.7,.2,1) backwards;
+}
+.upload-card { animation-delay: .32s; }
+.how-to-card { animation-delay: .4s; }
+.upload-card--compact, .toolbar, .sheet-wrap, .export-bar { animation-delay: 0s; }
+.toolbar { animation-delay: .08s; }
+.sheet-wrap { animation-delay: .12s; }
+.export-bar { animation-delay: .16s; }
+
+/* KPIs: entran uno tras otro */
+.stat { animation: pop-in .45s cubic-bezier(.2,.7,.2,1) backwards; }
+.stat:nth-child(1) { animation-delay: .02s; }
+.stat:nth-child(2) { animation-delay: .06s; }
+.stat:nth-child(3) { animation-delay: .10s; }
+.stat:nth-child(4) { animation-delay: .14s; }
+.stat:nth-child(5) { animation-delay: .18s; }
+.stat:nth-child(6) { animation-delay: .22s; }
+.stat { transition: transform .2s cubic-bezier(.2,.7,.2,1), box-shadow .2s; }
+.stat:hover { transform: translateY(-2px); box-shadow: var(--shadow-sm); }
+
+/* Recibo, mensajes y confirmaciones */
+.recibo, .download-msg, .stats-note { animation: slide-down .35s cubic-bezier(.2,.7,.2,1) backwards; }
+.export-clear > * { animation: fade-in .2s both; }
+
+/* Botones: elevación al pasar, presión al hacer clic */
+.btn-export, .btn-ghost, .btn-clear, .btn-danger, .hero-kicker, .recibo-toggle, .sf-ok, .sf-cancel {
+  transition: background .15s, border-color .15s, box-shadow .2s, transform .15s cubic-bezier(.2,.7,.2,1), color .15s;
+}
+.btn-export:hover, .btn-ghost:hover:not(:disabled), .btn-clear:hover, .btn-danger:hover { transform: translateY(-1px); }
+.btn-export:hover { box-shadow: 0 4px 12px rgba(27,27,29,.22); }
+.btn-ghost:hover:not(:disabled), .btn-clear:hover { box-shadow: var(--shadow-sm); }
+.btn-export:active, .btn-ghost:active, .btn-clear:active, .btn-danger:active, .hero-kicker:active { transform: translateY(0) scale(.98); box-shadow: none; }
+.tabs button { transition: background .2s, color .15s, box-shadow .2s, transform .15s; }
+.tabs button:active { transform: scale(.97); }
+.shell-link, .footer-link { transition: color .15s, background .15s; }
+
+/* Dropzone: ícono que sube al pasar, anillo al arrastrar, spinner al leer */
+.dropzone { transition: background .2s, border-color .2s, transform .2s cubic-bezier(.2,.7,.2,1); }
+.dropzone svg { transition: transform .25s cubic-bezier(.2,.7,.2,1), color .2s; }
+.dropzone:hover svg { transform: translateY(-3px); color: var(--accent); }
+.dropzone.dragging { transform: scale(1.005); animation: pulse-ring 1.2s ease-out infinite; }
+.dropzone.dragging svg { transform: translateY(-5px) scale(1.08); color: var(--accent); }
+.dropzone--loading { pointer-events: none; }
+.dropzone--loading svg { animation: spin .9s linear infinite; color: var(--accent); }
+.dropzone--loading p {
+  background: linear-gradient(90deg, var(--text-2) 0%, var(--text) 50%, var(--text-2) 100%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: shimmer 1.4s linear infinite;
+}
+
+/* Diálogo y capa de privacidad */
+.dialog-overlay { animation: fade-in .2s ease-out both; }
+.dialog { animation: pop-in .3s cubic-bezier(.2,.7,.2,1) backwards; }
+.privacy-layer { animation: fade-up .25s cubic-bezier(.2,.7,.2,1) backwards; }
+
+/* Popup del filtro y FAQ */
+.sf { animation: pop-in .18s cubic-bezier(.2,.7,.2,1) backwards; }
+.how-to-faq summary::before { transition: transform .2s; display: inline-block; }
+.how-to-faq details[open] summary::before { transform: rotate(180deg); }
+.how-to-faq details p { animation: slide-down .25s cubic-bezier(.2,.7,.2,1) backwards; }
+
+/* Píldora del header: latido discreto del punto verde */
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .35; } }
+.pill--ok::before { animation: blink 2.4s ease-in-out infinite; }
+
+/* Números de KPI: tabulares para que no salten al contar */
+.stat-value { transition: color .2s; }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

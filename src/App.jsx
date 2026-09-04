@@ -196,7 +196,7 @@ export default function App() {
         <div className={`upload-card${hasData ? ' upload-card--compact' : ''}`}>
           {!hasData && <div className="upload-card-header">Cargar archivos</div>}
           <div
-            className={`dropzone${dragging ? ' dragging' : ''}${hasData ? ' dropzone--compact' : ''}`}
+            className={`dropzone${dragging ? ' dragging' : ''}${hasData ? ' dropzone--compact' : ''}${loading ? ' dropzone--loading' : ''}`}
             onDrop={onDrop}
             onDragOver={(e) => { e.preventDefault(); setDragging(true) }}
             onDragLeave={() => setDragging(false)}
@@ -233,9 +233,9 @@ export default function App() {
               <Stat value={stats.facturas} label="Facturas" hint={stats.egresos ? `${stats.egresos} nota${stats.egresos > 1 ? 's' : ''} de crédito` : null} />
               <Stat value={stats.conceptos} label="Conceptos" />
               <Stat value={stats.emisores} label="Emisores" hint="proveedores o clientes" />
-              <Stat value={fmtMoney(stats.subtotal)} label="Subtotal MXN" hint="sin impuestos, menos descuentos" />
-              <Stat value={fmtMoney(stats.impuestos)} label="Impuestos MXN" hint="trasladados − retenidos" />
-              <Stat value={fmtMoney(stats.total)} label="Total MXN" hint="con impuestos" accent />
+              <Stat value={stats.subtotal} format={fmtMoney} label="Subtotal MXN" hint="sin impuestos, menos descuentos" />
+              <Stat value={stats.impuestos} format={fmtMoney} label="Impuestos MXN" hint="trasladados − retenidos" />
+              <Stat value={stats.total} format={fmtMoney} label="Total MXN" hint="con impuestos" accent />
             </div>
             <div className="stats-note">
               {filtered ? <strong>Cifras de lo filtrado. </strong> : null}
@@ -365,10 +365,35 @@ export default function App() {
   )
 }
 
-function Stat({ value, label, hint, accent }) {
+/** Anima un número desde su valor anterior hasta el nuevo (400 ms, ease-out). */
+function useCountUp(target, duration = 400) {
+  const [shown, setShown] = useState(target)
+  const fromRef = useRef(target)
+  useEffect(() => {
+    const reduce = typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    const from = fromRef.current
+    if (reduce || from === target) { fromRef.current = target; setShown(target); return }
+    let raf
+    const t0 = performance.now()
+    const tick = (now) => {
+      const k = Math.min(1, (now - t0) / duration)
+      const e = 1 - Math.pow(1 - k, 3)
+      setShown(from + (target - from) * e)
+      if (k < 1) raf = requestAnimationFrame(tick)
+      else fromRef.current = target
+    }
+    raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [target, duration])
+  return shown
+}
+
+function Stat({ value, format, label, hint, accent }) {
+  const shown = useCountUp(value)
+  const text = format ? format(shown) : Math.round(shown).toLocaleString('es-MX')
   return (
     <div className={`stat${accent ? ' stat--accent' : ''}`}>
-      <span className="stat-value">{typeof value === 'number' ? value.toLocaleString('es-MX') : value}</span>
+      <span className="stat-value">{text}</span>
       <span className="stat-label">{label}</span>
       {hint && <span className="stat-hint">{hint}</span>}
     </div>

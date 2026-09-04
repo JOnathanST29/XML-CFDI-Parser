@@ -147,7 +147,7 @@ const DataGrid = forwardRef(function DataGrid(
       defaultColDef={DEFAULT_COL_DEF}
       quickFilterText={quickFilterText}
       domLayout={domLayout}
-      animateRows={false}
+      animateRows
       cellSelection
       undoRedoCellEditing
       undoRedoCellEditingLimit={50}
