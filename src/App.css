@@ -76,6 +76,7 @@ strong { font-weight: 600; }
   z-index: 50;
 }
 .shell-logo {
+  text-decoration: none;
   display: inline-flex;
   align-items: center;
   gap: 10px;

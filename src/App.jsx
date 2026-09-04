@@ -157,7 +157,7 @@ export default function App() {
       )}
 
       <header className="shell-header">
-        <span className="shell-logo">CFDI a Excel</span>
+        <a className="shell-logo" href="/" aria-label="CFDI a Excel, inicio">CFDI a Excel</a>
         <div className="shell-right">
           <span className="pill pill--ok" title="Los XML se procesan en tu navegador; no hay servidor">100% en tu navegador</span>
           <button className="shell-link" type="button" onClick={() => setPrivacyOpen(true)}>Aviso de privacidad</button>
@@ -334,7 +334,7 @@ export default function App() {
 
       <footer className="footer">
         <div className="footer-inner">
-          <span className="footer-brand">XML · CFDI Parser</span>
+          <span className="footer-brand">CFDI a Excel · excelcfdi.com</span>
           <span className="footer-sep">·</span>
           <span className="footer-tag">Sin servidor · Sin cookies · Conteo anónimo de visitas</span>
           <span className="footer-sep">·</span>

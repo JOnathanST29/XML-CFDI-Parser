@@ -14,7 +14,7 @@ export default function Privacy({ onBack }) {
         <section>
           <h2>1. Responsable</h2>
           <p>
-            Esta herramienta (CFDI Parser) es un proyecto personal de uso libre y gratuito,
+            Esta herramienta (CFDI a Excel, excelcfdi.com) es un proyecto personal de uso libre y gratuito,
             sin fines de lucro. No pertenece a ninguna empresa ni recolecta datos comerciales
             de sus usuarios.
           </p>
