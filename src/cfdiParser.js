@@ -37,7 +37,7 @@ export function parseCFDI(xmlText) {
       RFC_RECEPTOR:  rfcReceptor,
       CODIGO_PRODUCTO: c.getAttribute('NoIdentificacion') || '',
       PRODUCTO:      (c.getAttribute('Descripcion') || '').trim(),
-      BOTELLAS:      parseFloat(c.getAttribute('Cantidad') || 0),
+      CANTIDAD:      parseFloat(c.getAttribute('Cantidad') || 0),
       TOTAL:         parseFloat(c.getAttribute('Importe')  || 0),
       DOCUMENTO:     uuid,
     })

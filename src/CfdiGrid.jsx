@@ -90,7 +90,7 @@ const COLUMN_DEFS = [
   { field: 'CODIGO_PRODUCTO', headerName: 'Código',        width: 120 },
   { field: 'PRODUCTO',        headerName: 'Producto',      minWidth: 240, flex: 3 },
   {
-    field: 'BOTELLAS', headerName: 'Botellas', width: 110, type: 'numericColumn',
+    field: 'CANTIDAD', headerName: 'Cantidad', width: 110, type: 'numericColumn',
     filterParams: { kind: 'number', format: fmtNumber },
     cellEditor: 'agNumberCellEditor',
     valueFormatter: p => fmtNumber(p.value),
@@ -133,9 +133,9 @@ export default function CfdiGrid({ rows, onChange }) {
 
   // Fila fija de totales (sobre las filas visibles tras filtrar)
   const computeTotals = useCallback((api) => {
-    let botellas = 0, total = 0, n = 0
+    let cantidad = 0, total = 0, n = 0
     api.forEachNodeAfterFilter(node => {
-      botellas += Number(node.data?.BOTELLAS) || 0
+      cantidad += Number(node.data?.CANTIDAD) || 0
       total    += Number(node.data?.TOTAL)    || 0
       n++
     })
@@ -143,7 +143,7 @@ export default function CfdiGrid({ rows, onChange }) {
     api.setGridOption('pinnedBottomRowData', [{
       __id: '__total__',
       EMISOR: `Total (${n.toLocaleString('es-MX')} conceptos)`,
-      BOTELLAS: botellas,
+      CANTIDAD: cantidad,
       TOTAL: total,
     }])
   }, [])

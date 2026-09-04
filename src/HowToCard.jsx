@@ -76,8 +76,8 @@ export default function HowToCard({ compact = false }) {
             <summary>¿Puedo cargar facturas de notas de crédito o pagos?</summary>
             <p>
               Sí, cualquier CFDI 4.0 funciona (Ingreso, Egreso, Pago, Traslado, Nómina).
-              Solo ten en cuenta que las columnas <code>BOTELLAS</code> y <code>TOTAL</code>{' '}
-              pueden no tener sentido en algunos tipos (ej. en una nómina, "BOTELLAS" sería 1).
+              Solo ten en cuenta que las columnas <code>CANTIDAD</code> y <code>TOTAL</code>{' '}
+              pueden no tener sentido en algunos tipos (ej. en una nómina, "CANTIDAD" sería 1).
             </p>
           </details>
           <details>

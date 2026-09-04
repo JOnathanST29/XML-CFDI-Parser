@@ -1,6 +1,6 @@
 import * as XLSX from 'xlsx'
 
-const COLUMNS = ['EMISOR','RFC_EMISOR','FECHA','FACTURA','RECEPTOR','RFC_RECEPTOR','CODIGO_PRODUCTO','PRODUCTO','BOTELLAS','TOTAL','DOCUMENTO']
+const COLUMNS = ['EMISOR','RFC_EMISOR','FECHA','FACTURA','RECEPTOR','RFC_RECEPTOR','CODIGO_PRODUCTO','PRODUCTO','CANTIDAD','TOTAL','DOCUMENTO']
 
 // Umami custom event helper (no-op si Umami no está cargado)
 function track(event, data = {}) {

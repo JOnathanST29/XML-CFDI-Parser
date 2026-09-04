@@ -100,7 +100,7 @@ Comportamientos útiles:
 | `RFC_RECEPTOR` | `cfdi:Receptor/@Rfc` |
 | `CODIGO_PRODUCTO` | `cfdi:Concepto/@NoIdentificacion` |
 | `PRODUCTO` | `cfdi:Concepto/@Descripcion` |
-| `BOTELLAS` | `cfdi:Concepto/@Cantidad` |
+| `CANTIDAD` | `cfdi:Concepto/@Cantidad` |
 | `TOTAL` | `cfdi:Concepto/@Importe` |
 | `DOCUMENTO` | `tfd:TimbreFiscalDigital/@UUID` |
 
@@ -108,8 +108,8 @@ Comportamientos útiles:
 > de cabecera se repiten en cada fila — eso permite filtrar por proveedor, fecha, etc. directamente).
 
 > **Notas sobre nombres:**
-> - `BOTELLAS` mantiene la convención del Excel original con el que cruzamos datos. Realmente es la
->   cantidad del concepto (puede ser piezas, kg, lo que sea). No lo renombré para mantener compatibilidad.
+> - `CANTIDAD` es la cantidad del concepto en la unidad que declare el emisor (`ClaveUnidad` / `Unidad` del CFDI:
+>   piezas, kg, cajas...). Antes se llamaba `BOTELLAS` por compatibilidad con un Excel de un cliente.
 > - `CODIGO_PRODUCTO` es lo que el emisor pone como SKU/código interno. No es la `ClaveProdServ`
 >   del SAT (que es genérica, ej. `50202200` = bebidas alcohólicas).
 

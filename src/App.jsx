@@ -48,7 +48,7 @@ export default function App() {
     processFiles(e.dataTransfer.files)
   }, [processFiles])
 
-  const totalBotellas = rows.reduce((s, r) => s + (r.BOTELLAS || 0), 0)
+  const totalCantidad = rows.reduce((s, r) => s + (r.CANTIDAD || 0), 0)
   const totalImporte  = rows.reduce((s, r) => s + (r.TOTAL    || 0), 0)
   const proveedores   = new Set(rows.map(r => r.EMISOR)).size
 
@@ -118,7 +118,7 @@ export default function App() {
             {[
               { value: rows.length.toLocaleString('es-MX'), label: 'Conceptos' },
               { value: proveedores, label: 'Proveedores' },
-              { value: totalBotellas.toLocaleString('es-MX'), label: 'Botellas' },
+              { value: totalCantidad.toLocaleString('es-MX'), label: 'Cantidad' },
               { value: `$${totalImporte.toLocaleString('es-MX', { minimumFractionDigits: 2 })}`, label: 'Total MXN' },
             ].map(s => (
               <div className="stat" key={s.label}>
