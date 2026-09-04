@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react'
+import { useState, useCallback } from 'react'
 import { parseFiles } from './cfdiParser'
 import { exportToExcel } from './exporter'
 import CfdiGrid from './CfdiGrid'
@@ -15,11 +15,8 @@ export default function App() {
   const [loading, setLoading]   = useState(false)
   const [filename, setFilename] = useState('COMPRAS_CFDI.xlsx')
   const [view, setView]         = useState('home')
-  const [showWelcome, setShowWelcome] = useState(false)
-
-  useEffect(() => {
-    if (!localStorage.getItem(WELCOME_KEY)) setShowWelcome(true)
-  }, [])
+  // Inicializador perezoso: se lee localStorage una sola vez al montar, sin efecto ni re-render extra
+  const [showWelcome, setShowWelcome] = useState(() => !localStorage.getItem(WELCOME_KEY))
 
   const dismissWelcome = () => {
     localStorage.setItem(WELCOME_KEY, '1')
