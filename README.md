@@ -51,8 +51,8 @@ Comportamientos útiles:
 
 ```
 ┌─────────────────┐     ┌──────────────┐     ┌──────────────┐     ┌─────────────┐
-│ XML del SAT     │ →   │ DOMParser    │ →   │ AG Grid      │ →   │ SheetJS     │
-│ (drag & drop)   │     │ (cfdiParser) │     │ (UI editable)│     │ (.xlsx)     │
+│ XML del SAT     │ →   │ DOMParser    │ →   │ AG Grid      │ →   │ AG Grid     │
+│ (drag & drop)   │     │ (cfdiParser) │     │ (2 vistas)   │     │ Excel export│
 └─────────────────┘     └──────────────┘     └──────────────┘     └─────────────┘
         ↑                                                                ↓
    Tu navegador  ─────────────────────────────────────────────────  Tu computadora
@@ -63,11 +63,14 @@ Comportamientos útiles:
 
 | Archivo | Qué hace |
 |---|---|
-| [`src/cfdiParser.js`](src/cfdiParser.js) | Lee el XML del CFDI con `DOMParser` y devuelve un array de filas (una por concepto del comprobante) |
-| [`src/CfdiGrid.jsx`](src/CfdiGrid.jsx) | Tabla AG Grid Community: columnas tipadas, edición conectada al estado, fila de totales y buscador global |
+| [`src/cfdiParser.js`](src/cfdiParser.js) | Lee CFDI 3.3 y 4.0 con `DOMParser`: cabecera completa, impuestos por tasa (traslados, retenciones, locales), nómina, complemento de pago. Devuelve conceptos, facturas, columnas de impuestos y un resumen de la carga (leídas, omitidas con motivo, repetidas) |
+| [`src/DataGrid.jsx`](src/DataGrid.jsx) | Grid AG Grid Enterprise reutilizable: fila de totales sobre lo filtrado, selección de rangos y copiar, panel de columnas, agrupar arrastrando, undo |
+| [`src/columns.js`](src/columns.js) | Definiciones de columnas de las vistas Conceptos y Facturas; las columnas de impuestos se generan según lo que traigan los XML |
+| [`src/catalogos.js`](src/catalogos.js) | Catálogos del SAT (tipo de comprobante, formas y métodos de pago, impuestos, uso CFDI, regímenes) para mostrar nombres legibles |
+| [`src/agGridLicense.js`](src/agGridLicense.js) | Registra la licencia Enterprise desde `AG_GRID_ENTERPRISE_KEY` (ver `.env.example`) |
 | [`src/SetFilter.jsx`](src/SetFilter.jsx) | Filtro estilo Excel (lista de valores con checkboxes, árbol de fechas, orden A-Z, buscar) para AG Grid Community |
-| [`src/exporter.js`](src/exporter.js) | Toma las filas y genera un `.xlsx` con SheetJS, agregando la extensión si falta |
-| [`src/App.jsx`](src/App.jsx) | UI principal: dropzone, KPIs, toolbar, routing simple home/privacy |
+| [`src/exporter.js`](src/exporter.js) | Exporta con AG Grid Enterprise: 2 hojas (Conceptos y Facturas), respeta filtro y orden, incluye todas las columnas, fechas y montos con formato real. En celular ofrece "Compartir" |
+| [`src/App.jsx`](src/App.jsx) | UI principal: dropzone, recibo de carga, KPIs que siguen al filtro, pestañas Conceptos/Facturas, descarga con confirmación, Limpiar con confirmación, aviso de privacidad como capa (la tabla conserva filtros) |
 | [`src/Privacy.jsx`](src/Privacy.jsx) | Página completa con el aviso de privacidad (LFPDPPP) |
 | [`src/WelcomeDialog.jsx`](src/WelcomeDialog.jsx) | Modal de bienvenida (primera visita, persistido en localStorage) |
 | [`src/App.css`](src/App.css) | Estilos inspirados en SAP Fiori (paleta, tipografía 72, layout shell) |
@@ -76,51 +79,51 @@ Comportamientos útiles:
 
 - **Vite + React (JSX, sin TypeScript):** rápido para iterar, no necesitamos tipos para una app tan acotada.
 - **Sin react-router:** un solo flag `view` en `useState` basta para alternar entre home y privacy. Ahorra ~10 KB.
-- **AG Grid Community en lugar de Univer:** antes usábamos Univer (hoja estilo Excel con fórmulas). Pesaba ~1.7 MB gzip
-  y nada de lo que el usuario editaba o filtraba llegaba al Excel exportado (el export salía del estado de React).
-  AG Grid es DOM (funciona Ctrl+F, selección de texto, touch), pesa ~4 veces menos y las ediciones sí se exportan.
-- **Registro modular de AG Grid:** solo se registran los módulos que usamos en `CfdiGrid.jsx`. Si usas una API nueva
-  del grid y sale `AG Grid: error #200`, falta registrar el módulo que indica el link. En dev se carga `ValidationModule`
-  para que el mensaje sea explícito.
-- **Filtro estilo Excel propio (`SetFilter.jsx`):** el Set Filter con checkboxes de AG Grid es Enterprise (de pago),
-  así que lo implementamos como custom filter component. Igual que Excel, la lista solo muestra los valores que sobreviven
-  a los filtros de las demás columnas.
+- **AG Grid Enterprise en lugar de Univer:** antes usábamos Univer (hoja estilo Excel con fórmulas). Pesaba ~1.7 MB gzip
+  y nada de lo que el usuario editaba o filtraba llegaba al Excel exportado. AG Grid es DOM (funciona Ctrl+F, selección
+  de texto, touch), y con Enterprise tenemos exportación a Excel nativa (respeta filtros, formatos reales, varias hojas),
+  selección de rangos con copiar, panel de columnas y agrupación arrastrando encabezados. Bundle: ~750 KB gzip.
+- **Licencia Enterprise por variable de entorno:** `AG_GRID_ENTERPRISE_KEY` en `.env.local` (ignorado por git; el repo es
+  público) y como secret del mismo nombre en GitHub Actions. Sin clave todo funciona pero con marca de agua.
+- **Filtro estilo Excel propio (`SetFilter.jsx`):** lo construimos cuando estábamos en Community y a los usuarios les gustó
+  ("Excel calcado"), así que lo conservamos: lista de valores con conteo, árbol Año → Mes → Día en fechas, y la lista solo
+  muestra los valores que sobreviven a los filtros de las demás columnas, igual que Excel.
+- **Dos vistas, un solo estado:** Conceptos (una fila por renglón) y Facturas (una fila por UUID) se montan las dos y se
+  alternan con `hidden`, para que el Excel salga con ambas hojas y para no perder filtros al cambiar de pestaña.
+- **Totales con criterio fiscal:** ingresos suman, egresos (notas de crédito) restan, nómina/pago/traslado se excluyen.
+  Monedas distintas de MXN se convierten con el `TipoCambio` del XML. Los KPIs se calculan sobre lo filtrado.
+- **Fechas en hora local:** el CFDI trae `2026-01-15T19:30:00` sin zona; se interpreta y formatea con hora local, nunca
+  con `toISOString()` (que convertía a UTC y corría un día las facturas timbradas después de las 18:00).
+- **Columnas de impuestos dinámicas:** se crea una columna por cada combinación impuesto + tasa presente en los XML
+  (`IVA 16%`, `IVA 8%`, `IVA exento`, `IEPS 26.5%`, `Ret. ISR`, `Ret. IVA`, `ISH 3% (local)`...). Así no asumimos 16% ni
+  mezclamos IEPS con IVA.
 - **localStorage para el welcome:** clave `cfdi-parser:welcome-seen`. Borra esa clave para volver a verlo.
 - **Sin analytics ni cookies:** la promesa de privacidad es vinculante; cualquier script de tracking la rompería.
 
 ### Columnas extraídas
 
-| Columna del Excel | De dónde sale en el XML |
-|---|---|
-| `EMISOR` | `cfdi:Emisor/@Nombre` |
-| `RFC_EMISOR` | `cfdi:Emisor/@Rfc` |
-| `FECHA` | `cfdi:Comprobante/@Fecha` |
-| `FACTURA` | `@Serie` + `@Folio` |
-| `RECEPTOR` | `cfdi:Receptor/@Nombre` |
-| `RFC_RECEPTOR` | `cfdi:Receptor/@Rfc` |
-| `CODIGO_PRODUCTO` | `cfdi:Concepto/@NoIdentificacion` |
-| `PRODUCTO` | `cfdi:Concepto/@Descripcion` |
-| `CANTIDAD` | `cfdi:Concepto/@Cantidad` |
-| `TOTAL` | `cfdi:Concepto/@Importe` |
-| `DOCUMENTO` | `tfd:TimbreFiscalDigital/@UUID` |
+**Por factura** (pestaña Facturas y hoja "Facturas"): `TIPO`, `FACTURA` (serie+folio), `FECHA`, `FECHA_TIMBRADO`, `EMISOR`,
+`RFC_EMISOR`, `REGIMEN_EMISOR`, `RECEPTOR`, `RFC_RECEPTOR`, `USO_CFDI`, `MONEDA`, `TIPO_CAMBIO`, `METODO_PAGO`, `FORMA_PAGO`,
+`LUGAR_EXPEDICION`, `SUBTOTAL`, `DESCUENTO`, una columna por impuesto y tasa (`TRAS_IVA_16`, `TRAS_IEPS_26_5`, `RET_ISR`,
+`RET_IVA`, `TRAS_LOCAL_ISH`...), `IMPUESTOS_TRASLADADOS`, `IMPUESTOS_RETENIDOS`, `TOTAL`, `TOTAL_MXN`, `NUM_CONCEPTOS`,
+`UUID`, `VERSION`, `ARCHIVO`. En nómina: `NOMINA_PERCEPCIONES`, `NOMINA_DEDUCCIONES`, `NOMINA_ISR_RETENIDO`. En pagos:
+`PAGO_MONTO`, `PAGO_NUM_DOCTOS`, `PAGO_DOCUMENTOS`.
 
-> Una fila **por concepto**: si una factura tiene 5 productos diferentes, genera 5 filas (todos los datos
-> de cabecera se repiten en cada fila — eso permite filtrar por proveedor, fecha, etc. directamente).
+**Por concepto** (pestaña Conceptos y hoja "Conceptos"): la cabecera de la factura repetida en cada fila, más
+`NUM_CONCEPTO`, `CLAVE_PROD_SERV`, `CODIGO_PRODUCTO` (NoIdentificacion), `PRODUCTO`, `CANTIDAD`, `CLAVE_UNIDAD`, `UNIDAD`,
+`VALOR_UNITARIO`, `IMPORTE` (sin impuestos), `DESCUENTO_CONCEPTO`, los impuestos del renglón por tasa, e
+`IMPORTE_CON_IMPUESTOS` (importe − descuento + trasladados − retenidos).
 
-> **Notas sobre nombres:**
-> - `CANTIDAD` es la cantidad del concepto en la unidad que declare el emisor (`ClaveUnidad` / `Unidad` del CFDI:
->   piezas, kg, cajas...). Antes se llamaba `BOTELLAS` por compatibilidad con un Excel de un cliente.
-> - `CODIGO_PRODUCTO` es lo que el emisor pone como SKU/código interno. No es la `ClaveProdServ`
->   del SAT (que es genérica, ej. `50202200` = bebidas alcohólicas).
+> Una fila **por concepto** en la vista Conceptos: si una factura tiene 5 productos, son 5 filas con la misma cabecera.
+> Para una fila por comprobante usa la pestaña Facturas. El Excel siempre trae las dos hojas.
 
 ## Stack
 
 - [Vite](https://vite.dev/) — build tool / dev server
 - [React](https://react.dev/) — UI
-- [AG Grid Community](https://www.ag-grid.com/) (MIT) — tabla con sorting, edición y filtros
-  - `ag-grid-community` + `ag-grid-react` + `@ag-grid-community/locale` (español)
+- [AG Grid Enterprise](https://www.ag-grid.com/) — tabla con filtros, edición, rangos, agrupación y exportación a Excel
+  - `ag-grid-enterprise` + `ag-grid-react` + `@ag-grid-community/locale` (español)
   - Tema Quartz con la paleta Fiori
-- [SheetJS](https://sheetjs.com/) (`xlsx`) — generación del `.xlsx` descargable
 - Estilo inspirado en [SAP Fiori](https://experience.sap.com/fiori-design-web/) (paleta azul `#0070f2`, tipografía 72, shell header)
 
 ## Desarrollo
@@ -144,14 +147,12 @@ location.reload()
 
 El parser está en [`src/cfdiParser.js`](src/cfdiParser.js). Solo hay que:
 
-1. Leer el atributo nuevo en el bucle de conceptos (`c.getAttribute('XXX')`)
-2. Agregar la columna al objeto que se hace `push`
-3. Agregar la columna en `COLUMN_DEFS` de [`src/CfdiGrid.jsx`](src/CfdiGrid.jsx) (con `filterParams.kind` = `text`, `number` o `date`) y en `COLUMNS` de [`src/exporter.js`](src/exporter.js)
+1. Leerlo en `parseCFDI` de [`src/cfdiParser.js`](src/cfdiParser.js): en `cabecera` si es de la factura, o en el
+   bucle de conceptos si es del renglón (`attr(c, 'XXX')`)
+2. Agregar la columna en `conceptoColumns` o `facturaColumns` de [`src/columns.js`](src/columns.js) usando los helpers
+   `text`, `money` o `date` (`hide: true` si no debe verse por default; el Excel la incluye de todos modos)
 
-Campos del CFDI que no estamos usando hoy y podrían ser útiles:
-- `cfdi:Comprobante/@SubTotal`, `@Total`, `@Moneda`, `@TipoDeComprobante`, `@FormaPago`, `@MetodoPago`
-- `cfdi:Concepto/@ClaveProdServ` (catálogo SAT) y `@ClaveUnidad`
-- Impuestos por concepto (IVA, IEPS) — están en `cfdi:Traslados`
+Complementos que todavía no se leen y podrían agregarse: carta porte, comercio exterior, donatarias, INE.
 
 ## Privacidad
 
@@ -169,9 +170,7 @@ Aviso completo disponible dentro de la app (footer → "Aviso de Privacidad").
 
 - [ ] Deploy a Vercel/Netlify
 - [ ] Analytics privacy-friendly (Umami o Plausible) opcional
-- [ ] Soporte para CFDI 3.3 (legacy) además de 4.0
-- [ ] Detectar tipo de comprobante (Ingreso/Egreso/Pago) y filtrar
-- [ ] Modo "Resumen por proveedor" — agrupa conceptos por EMISOR
+- [x] Resumen por proveedor: arrastra el encabezado Emisor a la barra de grupos
 
 ## Licencia
 

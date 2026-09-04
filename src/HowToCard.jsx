@@ -37,9 +37,15 @@ export default function HowToCard({ compact = false }) {
             <div>
               <strong>Revisa y edita en la tabla</strong>
               <p>
-                Aparecerá una tabla con todos los productos extraídos. Puedes ordenar, filtrar como en Excel
-                (clic en el ícono del encabezado y marca los valores que quieras) o editar celdas con doble clic.
-                Lo que edites es lo que se exporta.
+                Verás dos pestañas: <strong>Conceptos</strong> (una fila por producto o servicio) y{' '}
+                <strong>Facturas</strong> (una fila por comprobante con subtotal, impuestos y total).
+                Puedes ordenar, filtrar como en Excel (clic en el ícono del encabezado y marca los valores),
+                buscar, agrupar por proveedor arrastrando un encabezado a la barra de arriba, o editar celdas con
+                doble clic. Las columnas que no ves están en el panel <strong>Columnas</strong> a la derecha.
+              </p>
+              <p className="step-hint">
+                💡 Los cuadros de resumen y la fila de totales siguen al filtro. Las notas de crédito restan;
+                nómina y complementos de pago no entran al total.
               </p>
             </div>
           </li>
@@ -49,7 +55,8 @@ export default function HowToCard({ compact = false }) {
               <strong>Descarga el Excel</strong>
               <p>
                 Escribe el nombre que quieras para tu archivo y haz clic en{' '}
-                <strong>Descargar Excel</strong>. Si no le pones <code>.xlsx</code> al final,
+                <strong>Descargar Excel</strong>. Se exporta lo que ves (con filtros y orden) en dos hojas,
+                Conceptos y Facturas, con todas las columnas. Si no le pones <code>.xlsx</code> al final,
                 se agrega solo. El archivo se guarda en tu carpeta de Descargas.
               </p>
             </div>
@@ -68,16 +75,27 @@ export default function HowToCard({ compact = false }) {
           <details>
             <summary>¿Funciona con CFDI 3.3 (versión vieja)?</summary>
             <p>
-              Por ahora solo soporta <strong>CFDI 4.0</strong> (la versión obligatoria desde 2023).
-              Si tienes facturas más viejas en 3.3, puede que no las lea correctamente.
+              Sí. Lee <strong>CFDI 4.0</strong> (obligatorio desde 2023) y <strong>CFDI 3.3</strong>.
+              Las versiones anteriores (3.2 y más viejas) no se leen; al cargarlas aparecen en el recibo como omitidas
+              con el motivo.
             </p>
           </details>
           <details>
-            <summary>¿Puedo cargar facturas de notas de crédito o pagos?</summary>
+            <summary>¿Puedo cargar notas de crédito, nómina o complementos de pago?</summary>
             <p>
-              Sí, cualquier CFDI 4.0 funciona (Ingreso, Egreso, Pago, Traslado, Nómina).
-              Solo ten en cuenta que las columnas <code>CANTIDAD</code> y <code>TOTAL</code>{' '}
-              pueden no tener sentido en algunos tipos (ej. en una nómina, "CANTIDAD" sería 1).
+              Sí. La columna <strong>Tipo</strong> dice qué es cada comprobante (Ingreso, Egreso, Nómina, Pago,
+              Traslado). En los totales, los ingresos suman, los egresos (notas de crédito) restan, y nómina,
+              pagos y traslados no se cuentan. Si quieres ver solo un tipo, filtra la columna Tipo.
+            </p>
+          </details>
+          <details>
+            <summary>¿El Total es con IVA o sin IVA?</summary>
+            <p>
+              Hay varias columnas para que no haya duda: en Conceptos, <strong>Importe (sin impuestos)</strong> es
+              cantidad por precio, y <strong>Importe con impuestos</strong> ya suma IVA e IEPS y resta retenciones
+              de ese renglón. En Facturas ves <strong>Subtotal</strong>, cada impuesto por tasa (IVA 16%, IVA 8%,
+              IEPS, retenciones de ISR e IVA, impuestos locales) y el <strong>Total</strong> del comprobante.
+              Las facturas en dólares u otra moneda se convierten a pesos con el tipo de cambio del XML.
             </p>
           </details>
           <details>
@@ -88,11 +106,19 @@ export default function HowToCard({ compact = false }) {
             </p>
           </details>
           <details>
-            <summary>¿Por qué a veces hay varias filas con el mismo folio?</summary>
+            <summary>¿Por qué en Conceptos hay varias filas con el mismo folio?</summary>
             <p>
               Porque cada fila representa <strong>un producto</strong> de la factura.
               Si una factura trae 5 productos diferentes, aparecerán 5 filas con el mismo folio
-              pero distinto producto. Así puedes filtrar y sumar por producto fácilmente.
+              pero distinto producto. Así puedes filtrar y sumar por producto. Si quieres una fila
+              por factura, usa la pestaña <strong>Facturas</strong>.
+            </p>
+          </details>
+          <details>
+            <summary>¿Qué es el "Folio fiscal (UUID)"?</summary>
+            <p>
+              Es el identificador único que el SAT asigna a cada comprobante al timbrarlo (32 caracteres).
+              Sirve para no cargar dos veces la misma factura y para localizarla en el portal del SAT.
             </p>
           </details>
         </div>
