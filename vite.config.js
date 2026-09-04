@@ -4,9 +4,4 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: '/',
   plugins: [react()],
-  resolve: {
-    alias: {
-      'opentype.js/dist/opentype.module.js': 'opentype.js/dist/opentype.mjs',
-    },
-  },
 })

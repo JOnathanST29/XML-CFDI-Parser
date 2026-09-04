@@ -36,8 +36,8 @@ Esta herramienta:
 1. Abres la app (es una sola página)
 2. Aparece un dialog de bienvenida explicando que todo es local — solo la primera vez
 3. Arrastras XMLs (o varios a la vez) al dropzone
-4. Aparece una hoja estilo Excel (Univer) con los conceptos extraídos
-5. Puedes **filtrar, ordenar, editar, aplicar fórmulas** dentro de la hoja
+4. Aparece una tabla (AG Grid) con los conceptos extraídos
+5. Puedes **filtrar, ordenar y editar** con filtros estilo Excel (lista de valores con checkboxes; las fechas en árbol Año → Mes → Día). Lo que edites en la tabla es lo que se exporta
 6. Escribes el nombre del archivo y das clic en **Descargar Excel**
 7. El archivo se descarga a tu computadora — fin
 
@@ -51,7 +51,7 @@ Comportamientos útiles:
 
 ```
 ┌─────────────────┐     ┌──────────────┐     ┌──────────────┐     ┌─────────────┐
-│ XML del SAT     │ →   │ DOMParser    │ →   │ Univer Sheet │ →   │ SheetJS     │
+│ XML del SAT     │ →   │ DOMParser    │ →   │ AG Grid      │ →   │ SheetJS     │
 │ (drag & drop)   │     │ (cfdiParser) │     │ (UI editable)│     │ (.xlsx)     │
 └─────────────────┘     └──────────────┘     └──────────────┘     └─────────────┘
         ↑                                                                ↓
@@ -64,7 +64,8 @@ Comportamientos útiles:
 | Archivo | Qué hace |
 |---|---|
 | [`src/cfdiParser.js`](src/cfdiParser.js) | Lee el XML del CFDI con `DOMParser` y devuelve un array de filas (una por concepto del comprobante) |
-| [`src/UniverSheet.jsx`](src/UniverSheet.jsx) | Componente que monta Univer y carga las filas en una hoja con AutoFilter activado |
+| [`src/CfdiGrid.jsx`](src/CfdiGrid.jsx) | Tabla AG Grid Community: columnas tipadas, edición conectada al estado, fila de totales y buscador global |
+| [`src/SetFilter.jsx`](src/SetFilter.jsx) | Filtro estilo Excel (lista de valores con checkboxes, árbol de fechas, orden A-Z, buscar) para AG Grid Community |
 | [`src/exporter.js`](src/exporter.js) | Toma las filas y genera un `.xlsx` con SheetJS, agregando la extensión si falta |
 | [`src/App.jsx`](src/App.jsx) | UI principal: dropzone, KPIs, toolbar, routing simple home/privacy |
 | [`src/Privacy.jsx`](src/Privacy.jsx) | Página completa con el aviso de privacidad (LFPDPPP) |
@@ -75,10 +76,15 @@ Comportamientos útiles:
 
 - **Vite + React (JSX, sin TypeScript):** rápido para iterar, no necesitamos tipos para una app tan acotada.
 - **Sin react-router:** un solo flag `view` en `useState` basta para alternar entre home y privacy. Ahorra ~10 KB.
-- **Univer en lugar de AG Grid o tabla HTML:** queríamos experiencia "Excel real" (fórmulas, filtros, formato).
-  Pesa más (~1.6 MB gzip) pero el valor pedagógico para el usuario lo justifica.
-- **`opentype.js` aliased en `vite.config.js`:** Univer apunta a un path interno que cambió en versiones nuevas
-  (`opentype.module.js` → `opentype.mjs`); el alias arregla el build.
+- **AG Grid Community en lugar de Univer:** antes usábamos Univer (hoja estilo Excel con fórmulas). Pesaba ~1.7 MB gzip
+  y nada de lo que el usuario editaba o filtraba llegaba al Excel exportado (el export salía del estado de React).
+  AG Grid es DOM (funciona Ctrl+F, selección de texto, touch), pesa ~4 veces menos y las ediciones sí se exportan.
+- **Registro modular de AG Grid:** solo se registran los módulos que usamos en `CfdiGrid.jsx`. Si usas una API nueva
+  del grid y sale `AG Grid: error #200`, falta registrar el módulo que indica el link. En dev se carga `ValidationModule`
+  para que el mensaje sea explícito.
+- **Filtro estilo Excel propio (`SetFilter.jsx`):** el Set Filter con checkboxes de AG Grid es Enterprise (de pago),
+  así que lo implementamos como custom filter component. Igual que Excel, la lista solo muestra los valores que sobreviven
+  a los filtros de las demás columnas.
 - **localStorage para el welcome:** clave `cfdi-parser:welcome-seen`. Borra esa clave para volver a verlo.
 - **Sin analytics ni cookies:** la promesa de privacidad es vinculante; cualquier script de tracking la rompería.
 
@@ -111,9 +117,9 @@ Comportamientos útiles:
 
 - [Vite](https://vite.dev/) — build tool / dev server
 - [React](https://react.dev/) — UI
-- [Univer](https://univer.ai/) (Apache 2.0) — editor de hojas estilo Excel embebible
-  - `@univerjs/presets` + `@univerjs/preset-sheets-core`
-  - Locale `es-ES`
+- [AG Grid Community](https://www.ag-grid.com/) (MIT) — tabla con sorting, edición y filtros
+  - `ag-grid-community` + `ag-grid-react` + `@ag-grid-community/locale` (español)
+  - Tema Quartz con la paleta Fiori
 - [SheetJS](https://sheetjs.com/) (`xlsx`) — generación del `.xlsx` descargable
 - Estilo inspirado en [SAP Fiori](https://experience.sap.com/fiori-design-web/) (paleta azul `#0070f2`, tipografía 72, shell header)
 
@@ -140,7 +146,7 @@ El parser está en [`src/cfdiParser.js`](src/cfdiParser.js). Solo hay que:
 
 1. Leer el atributo nuevo en el bucle de conceptos (`c.getAttribute('XXX')`)
 2. Agregar la columna al objeto que se hace `push`
-3. Agregar el header en `COLUMNS` de [`src/UniverSheet.jsx`](src/UniverSheet.jsx) y [`src/exporter.js`](src/exporter.js)
+3. Agregar la columna en `COLUMN_DEFS` de [`src/CfdiGrid.jsx`](src/CfdiGrid.jsx) (con `filterParams.kind` = `text`, `number` o `date`) y en `COLUMNS` de [`src/exporter.js`](src/exporter.js)
 
 Campos del CFDI que no estamos usando hoy y podrían ser útiles:
 - `cfdi:Comprobante/@SubTotal`, `@Total`, `@Moneda`, `@TipoDeComprobante`, `@FormaPago`, `@MetodoPago`
@@ -163,7 +169,6 @@ Aviso completo disponible dentro de la app (footer → "Aviso de Privacidad").
 
 - [ ] Deploy a Vercel/Netlify
 - [ ] Analytics privacy-friendly (Umami o Plausible) opcional
-- [ ] Code-splitting de Univer para reducir el bundle inicial
 - [ ] Soporte para CFDI 3.3 (legacy) además de 4.0
 - [ ] Detectar tipo de comprobante (Ingreso/Egreso/Pago) y filtrar
 - [ ] Modo "Resumen por proveedor" — agrupa conceptos por EMISOR

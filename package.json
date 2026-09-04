@@ -10,10 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@univerjs/preset-sheets-core": "^0.21.1",
-    "@univerjs/preset-sheets-filter": "^0.21.1",
-    "@univerjs/presets": "^0.21.1",
-    "opentype.js": "^1.3.5",
+    "@ag-grid-community/locale": "^36.1.0",
+    "ag-grid-community": "^36.1.0",
+    "ag-grid-react": "^36.1.0",
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "xlsx": "^0.18.5"

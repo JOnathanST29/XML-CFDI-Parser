@@ -35,10 +35,11 @@ export default function HowToCard({ compact = false }) {
           <li>
             <span className="step-num">3</span>
             <div>
-              <strong>Revisa y edita en la hoja</strong>
+              <strong>Revisa y edita en la tabla</strong>
               <p>
-                Aparecerá una hoja de cálculo igual que Excel con todos los productos extraídos.
-                Puedes ordenar, filtrar (clic en las flechitas ▼ del encabezado), aplicar fórmulas o editar celdas.
+                Aparecerá una tabla con todos los productos extraídos. Puedes ordenar, filtrar como en Excel
+                (clic en el ícono del encabezado y marca los valores que quieras) o editar celdas con doble clic.
+                Lo que edites es lo que se exporta.
               </p>
             </div>
           </li>

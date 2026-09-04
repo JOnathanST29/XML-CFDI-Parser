@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from 'react'
 import { parseFiles } from './cfdiParser'
 import { exportToExcel } from './exporter'
-import UniverSheet from './UniverSheet'
+import CfdiGrid from './CfdiGrid'
 import Privacy from './Privacy'
 import WelcomeDialog from './WelcomeDialog'
 import HowToCard from './HowToCard'
@@ -146,7 +146,7 @@ export default function App() {
           </div>
 
           <div className="sheet-wrap">
-            <UniverSheet rows={rows} />
+            <CfdiGrid rows={rows} onChange={setRows} />
           </div>
 
           <div className="how-to-bottom">
